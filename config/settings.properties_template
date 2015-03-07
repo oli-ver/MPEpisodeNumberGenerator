@@ -1,0 +1,39 @@
+#Sat Feb 28 14:30:21 CET 2015
+
+# This application currently only supports MySQL
+
+#Path to local mysql database
+mysqldatabasepath=C\:\\Program Files\\MySQL\\MySQL Server 5.6\\bin\\
+
+#Timestamp of last run
+lastrun=2015-02-28 14\:30\:21
+
+#EPG indicator that indicates that the program is a series and no film (The german EPG begins with "Folge:" if you use TV Movie Clickfinder)
+epgdescriptionseriesindicator=Folge\:
+
+#EPG description pattern to find series and episode number from description text if not known by thetvdb.com
+epgdescriptionpattern=Dies ist die \\d{1,}\\. Episode der \\d{1,}\\. Staffel.*
+
+#MediaPortal database user
+mediaportaldbuser=root
+
+#top level qualifier of your country (to chose a mirror from thetvdb)
+tld=de
+
+#language of your epg data
+language=de
+
+# your database password
+mediaportaldbpassword=
+
+# your database backup part (a dump is created before processing the epg)
+backuppath=bak/
+
+# Your database host
+mediaportaldbhost=localhost
+
+# Your database name
+mediaportaldbname=mptvdb
+
+# Thetvdb api proxy url
+thetvdb.proxy=http://science-site.de:9000/thetvdb/

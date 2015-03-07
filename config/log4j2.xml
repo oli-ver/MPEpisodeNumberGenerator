@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" monitorInterval="30">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601} %level{length=1} %c{1} - %msg%n" />
+		</Console>
+		<RollingRandomAccessFile name="RollingRandomAccessFile"
+				fileName="logs/MPEpisodeNumberGenerator/log.txt" filePattern="logs/MPEpisodeNumberGenerator/$${date:yyyy-MM}/log-%d{MM-dd-yyyy}-%i.txt.gz">
+			<PatternLayout>
+				<Pattern>%d{ISO8601} - %level{length=1} - %c{1} - %msg%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="5 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20"/>
+		</RollingRandomAccessFile>
+	</Appenders>
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="RollingRandomAccessFile"/>
+		</Root>
+	</Loggers>
+</Configuration>
