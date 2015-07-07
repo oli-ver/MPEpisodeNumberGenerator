@@ -25,6 +25,6 @@ public class Updates {
 	 * @see java.util.Vector#contains(java.lang.Object)
 	 */
 	public boolean contains(Object o) {
-		return seriesId.contains(o);
+		return seriesId!=null && seriesId.contains(o);
 	}
 }

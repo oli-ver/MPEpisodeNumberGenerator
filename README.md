@@ -23,10 +23,12 @@ The application does not support Microsoft SQL Server Express Edition at the mom
 
 ## Installation
 
-1. Download the Binaries here: https://github.com/oli-ver/MPEpisodeNumberGenerator/releases/download/1.0/MPEpisodeNumberGenerator.zip
+1. Download the Binaries here: https://github.com/oli-ver/MPEpisodeNumberGenerator/releases/download/1.0.1/MPEpisodeNumberGenerator-1.0.1.zip
 2. Unpack the application in a directory where you have both read and write permissions
 3. Rename or copy the template files in the config directory deleting the suffix "_template" in the filename and configure them to match your needs
-4. Start the application using the cmd script
+4. Edit the start script and add the following line:
+cd "path\to\your\MPEpisodeNumberGenerator"
+5. Start the application using the cmd script
 
 # Deutsch
 ## MPEpisodeNumberGenerator
@@ -53,7 +55,9 @@ Das Programm unterstützt im Moment nicht Microsoft SQL Server Express Edition.
 
 ## Installation
 
-1. Ladet euch die Binaries hier herunter: https://github.com/oli-ver/MPEpisodeNumberGenerator/releases/download/1.0/MPEpisodeNumberGenerator.zip
+1. Ladet euch die Binaries hier herunter: https://github.com/oli-ver/MPEpisodeNumberGenerator/releases/download/1.0.1/MPEpisodeNumberGenerator-1.0.1.zip
 2. Entpackt die Applikation in ein Verzeichnis, in dem  ihr Lese- und Schreib-Berechtigung habt
 3. Kopiert die Template-Dateien im Config-Verzeichnis oder benennt sie um, wobei ihr das Suffix "_template" im Dateinamen entfernen müsst. Konfiguriert sie anschließend, so dass sie auf eure Umgebung passen.
-4. Startet die Applikation mit dem cmd Skript
+4. Bearbeitet das Start-Skript und fügt folgende Zeile hinzu:
+cd "path\to\your\MPEpisodeNumberGenerator"
+5. Startet die Applikation mit dem cmd Skript
