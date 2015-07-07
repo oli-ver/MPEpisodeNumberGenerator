@@ -77,6 +77,11 @@ public interface SettingsFields {
 	public static final String FIELD_EPG_DESCRIPTION_PATTERN = "epgdescriptionpattern";
 
 	/**
+	 * field for the offline flag of the application
+	 */
+	public static final String FIELD_OFFLINE = "offline";
+
+	/**
 	 * File name of the substitutions file
 	 */
 	public static final String FILE_SUBSTITUTIONS_PROPERTIES = "config/substitutions.properties";
