@@ -123,59 +123,61 @@ public class MPEpisodeNumberGenerator {
 				boolean foundEpisode = false;
 				lineCounter++;
 
-				// Create TheTvDbController object per series title and try to
-				// find season and episode number
-				String newTitle = rs.getString("title");
+				if (!config.isOffline()) {
+					// Create TheTvDbController object per series title and try
+					// to
+					// find season and episode number
+					String newTitle = rs.getString("title");
 
-				String episodeName = rs.getString("episodeName");
+					String episodeName = rs.getString("episodeName");
 
-				// Change query if substiution exists
-				if (episodeNameSubstitutions != null) {
-					String substitute = episodeNameSubstitutions.get(episodeName);
-					if (substitute != null) {
-						logger.debug("Substitution '" + substitute + "' found for episode name '" + episodeName + "'");
-						episodeName = substitute;
+					// Change query if substiution exists
+					if (episodeNameSubstitutions != null) {
+						String substitute = episodeNameSubstitutions.get(episodeName);
+						if (substitute != null) {
+							logger.debug("Substitution '" + substitute + "' found for episode name '" + episodeName + "'");
+							episodeName = substitute;
+						} else {
+							// Episode name of epg is used
+						}
+					}
+
+					if (newTitle.equalsIgnoreCase(lastTitle)) {
+						epgCounter++;
 					} else {
-						// Episode name of epg is used
+						if (!lastTitle.equals("")) {
+							logger.info("Completed series with title '" + lastTitle + "' (mapped " + mappedCounter + " of " + epgCounter
+									+ " episodes in epg).");
+							epgCounter = 0;
+							mappedCounter = 0;
+						}
+						logger.info("Processing new series " + newTitle);
+						tvdb = new TheTvDbController(rs.getString("title"), rs.getString("originalAirDate").substring(0, 4));
 					}
-				}
+					lastTitle = newTitle;
 
-				if (newTitle.equalsIgnoreCase(lastTitle)) {
-					epgCounter++;
-				} else {
-					if (!lastTitle.equals("")) {
-						logger.info("Completed series with title '" + lastTitle + "' (mapped " + mappedCounter + " of " + epgCounter
-								+ " episodes in epg).");
-						epgCounter = 0;
-						mappedCounter = 0;
-					}
-					logger.info("Processing new series " + newTitle);
-					tvdb = new TheTvDbController(rs.getString("title"), rs.getString("originalAirDate").substring(0, 4));
-				}
-				lastTitle = newTitle;
-
-				SeriesData seriesData = tvdb.getSeriesData();
-				if (seriesData != null) {
-					Vector<EpisodeInformation> episodeList = seriesData.getEpisodeList();
-					if (episodeList != null && episodeList.size() > 0) {
-						for (EpisodeInformation episodeInfo : episodeList) {
-							if (episodeInfo != null) {
-								if (episodeInfo.getEpisodeName().equalsIgnoreCase(episodeName)) {
-									mappedCounter++;
-									logger.info("Mapped episode number successfully: " + episodeInfo.getSeasonNumber() + "x"
-											+ episodeInfo.getEpisodeNumber() + " - " + episodeInfo.getEpisodeName() + " - ProgramId='"
-											+ rs.getString("idProgram") + "'");
-									PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"),
-											episodeInfo.getSeasonNumber(), episodeInfo.getEpisodeNumber());
-									updateStmt.executeUpdate();
-									foundEpisode = true;
-									break;
+					SeriesData seriesData = tvdb.getSeriesData();
+					if (seriesData != null) {
+						Vector<EpisodeInformation> episodeList = seriesData.getEpisodeList();
+						if (episodeList != null && episodeList.size() > 0) {
+							for (EpisodeInformation episodeInfo : episodeList) {
+								if (episodeInfo != null) {
+									if (episodeInfo.getEpisodeName().equalsIgnoreCase(episodeName)) {
+										mappedCounter++;
+										logger.info("Mapped episode number successfully: " + episodeInfo.getSeasonNumber() + "x"
+												+ episodeInfo.getEpisodeNumber() + " - " + episodeInfo.getEpisodeName() + " - ProgramId='"
+												+ rs.getString("idProgram") + "'");
+										PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"),
+												episodeInfo.getSeasonNumber(), episodeInfo.getEpisodeNumber());
+										updateStmt.executeUpdate();
+										foundEpisode = true;
+										break;
+									}
 								}
 							}
 						}
 					}
 				}
-
 				// If no episode could be found try to get the episode
 				// numbers from the epg description field
 				if (!foundEpisode) {

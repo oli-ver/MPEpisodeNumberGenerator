@@ -51,6 +51,12 @@ public class Config extends Properties implements SettingsFields {
 	private String epgPattern = null;
 
 	/**
+	 * Flag to only scan EPG for series and episode numbers. If set the program
+	 * will not try to resolve informations using thetvdb.com
+	 */
+	private boolean offline = false;
+
+	/**
 	 * Creates an instance of the Config class by reading from
 	 * settings.properties file
 	 * 
@@ -71,6 +77,7 @@ public class Config extends Properties implements SettingsFields {
 		this.proxyUrl = getProperty(FIELD_PROXY_NAME);
 		this.epgSeriesIndicator = getProperty(FIELD_EPG_DESCRIPTION_SERIESINDICATOR);
 		this.epgPattern = getProperty(FIELD_EPG_DESCRIPTION_PATTERN);
+		this.offline = "true".equalsIgnoreCase(getProperty(FIELD_OFFLINE));
 	}
 
 	/**
@@ -109,5 +116,12 @@ public class Config extends Properties implements SettingsFields {
 	 */
 	public String getEpgPattern() {
 		return this.epgPattern;
+	}
+
+	/**
+	 * @return the offline
+	 */
+	public boolean isOffline() {
+		return offline;
 	}
 }
