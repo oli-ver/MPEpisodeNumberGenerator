@@ -4,7 +4,7 @@ Series and episode number generator for Mediaportal 1.X
 
 This application scans the EPG data of your MediaPortal MySql database and adds series and episode numbers to all episodes in EPG. Other applications with this features only update the epg data of series that have scheduled recordings set in MediaPortal.
 
-If you start this application before running TV Movie EPG import (Clickfinder) and TvWishList there will be no recordings of seasons that you do not need anymore.
+If you start this application after running TV Movie EPG import (Clickfinder) and TvWishList there will be no recordings of seasons that you do not need anymore.
 
 Please rename both template files in the config directory deleting the suffix _template and configure them to match your needs. The application will not start until you do. Do not change the value of the proxy. This is only a small application running on my server to make it possible not to provide my thetvdb.com api key to the users.
 
@@ -37,7 +37,7 @@ Serien- und Episoden-Nummer Generator für Mediaportal 1.X
 
 Diese Applikation scannt die EPG-Daten einer MediaPortal MySql-Datenbank und fügt die Staffel- und Folgen-Nummern zu allen Folgen im EPG hinzu. Andere Applikationen mit diesen Funktionen aktualisieren die EPG-Daten nur für die Serien, zu denen Folgen zur Aufnahme in MediaPortal programmiert worden sind.
 
-Wenn diese Applikation vor dem Start von TV Movie EPG import (Clickfinder) und TvWishList gestartet wird, werden keine Aufnahmen von TvWishlist mehr programmiert, die nicht benötigt werden.
+Wenn diese Applikation nach dem Start von TV Movie EPG import (Clickfinder) und TvWishList gestartet wird, werden keine Aufnahmen von TvWishlist mehr programmiert, die nicht benötigt werden.
 
 Bitte benennt beide Template-Dateien im config-Verzeichnis um, indem das Suffix "_template" gelöscht wird und konfiguriert sie nach eurer Umgebung. Die Applikation wird nicht starten, bis ihr das tut. Ändert nicht den Wert des Proxys. Es handelt sich nur um eine kleine Applikation auf meinem Server, um es zu ermöglichen den thetvdb.com API Schlüssel nicht an die Benutzer auszuliefern.
 
