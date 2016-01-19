@@ -1,0 +1,39 @@
+2016-01-19T21:40:54,073 - W - MPEpisodeNumberGenerator - ****************************************
+2016-01-19T21:40:54,074 - W - MPEpisodeNumberGenerator - *** MPEpisodeNumberGenerator started ***
+2016-01-19T21:40:54,075 - W - MPEpisodeNumberGenerator - ****************************************
+2016-01-19T21:40:54,076 - E - MPEpisodeNumberGenerator - Could not parse substitutions file. Please check it (config\substitutions.properties (Das System kann die angegebene Datei nicht finden)).
+java.io.FileNotFoundException: config\substitutions.properties (Das System kann die angegebene Datei nicht finden)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_60]
+	at java.io.FileInputStream.open(FileInputStream.java:195) ~[?:1.8.0_60]
+	at java.io.FileInputStream.<init>(FileInputStream.java:138) ~[?:1.8.0_60]
+	at de.mediaportal.episodenumbergenerator.model.Substitutions.<init>(Substitutions.java:48) ~[classes/:?]
+	at de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator.fetchSubstitutions(MPEpisodeNumberGenerator.java:343) [classes/:?]
+	at de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator.main(MPEpisodeNumberGenerator.java:153) [classes/:?]
+2016-01-19T21:46:37,294 - W - MPEpisodeNumberGenerator - ****************************************
+2016-01-19T21:46:37,295 - W - MPEpisodeNumberGenerator - *** MPEpisodeNumberGenerator started ***
+2016-01-19T21:46:37,295 - W - MPEpisodeNumberGenerator - ****************************************
+2016-01-19T21:46:37,492 - E - MPEpisodeNumberGenerator - When scanning epg an Exception has been thrown (Access denied for user 'root'@'localhost' (using password: NO))
+java.sql.SQLException: Access denied for user 'root'@'localhost' (using password: NO)
+	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:996) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3887) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3823) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:870) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.MysqlIO.proceedHandshakeWithPluggableAuthentication(MysqlIO.java:1659) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.MysqlIO.doHandshake(MysqlIO.java:1206) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.ConnectionImpl.coreConnect(ConnectionImpl.java:2234) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:2265) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:2064) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:790) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.JDBC4Connection.<init>(JDBC4Connection.java:44) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_60]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_60]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_60]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422) ~[?:1.8.0_60]
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:377) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:395) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at com.mysql.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:325) ~[mysql-connector-java-5.1.34.jar:5.1.34]
+	at java.sql.DriverManager.getConnection(DriverManager.java:664) ~[?:1.8.0_60]
+	at java.sql.DriverManager.getConnection(DriverManager.java:270) ~[?:1.8.0_60]
+	at de.mediaportal.episodenumbergenerator.controller.DatabaseConnection.<init>(DatabaseConnection.java:104) ~[classes/:?]
+	at de.mediaportal.episodenumbergenerator.controller.DatabaseConnection.getInstance(DatabaseConnection.java:79) ~[classes/:?]
+	at de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator.main(MPEpisodeNumberGenerator.java:147) [classes/:?]

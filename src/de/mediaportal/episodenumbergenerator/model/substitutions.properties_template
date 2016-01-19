@@ -1,0 +1,10 @@
+# If the name of a series or of an episode in the epg is not found at thetvdb because 
+# of the translation title (like "Greys Anatomie - Die jungen Ärzte" in Germany) you can provide
+# substitution names here
+
+# Series name substitutions (use <actual name in your epg>;<substitution name>;<next actual name in your epg>;<next substitution name>;...)
+seriesname.substitutions=Grey's Anatomy - Die jungen Ärzte;Grey's Anatomy;Das A-Team;A-Team;
+
+
+# Episode name substitutions (use <actual name in your epg>;<substitution name>;<next actual name in your epg>;<next substitution name>;...)
+episodename.substitutions=

@@ -1,6 +1,11 @@
 package de.mediaportal.episodenumbergenerator;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -9,6 +14,9 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,6 +75,64 @@ public class MPEpisodeNumberGenerator {
 	 *            no arguments are used
 	 */
 	public static void main(String[] args) {
+		// Initialize config
+
+		File configDir = new File("config/");
+		File configFile = new File("config/settings.properties");
+
+		// Check if user wants to (re)create config and rename current config if
+		// exists
+		if (args != null && args.length > 0) {
+			for (String arg : args) {
+				if (arg != null && arg.equalsIgnoreCase("--createconfig")) {
+					if (configDir.exists() && configFile.exists()) {
+						File bakFile = new File("config/settings.bak");
+						if (bakFile.exists()) {
+							bakFile.delete();
+						}
+						configFile.renameTo(bakFile);
+					}
+				}
+			}
+		}
+
+		try {
+			// Check config directory and file and create directory and config
+			// file if necessary
+			if (!configDir.exists() || !configFile.exists()) {
+				configDir.mkdirs();
+				JOptionPane.showMessageDialog(null, "A configuration will be created now.");
+				JTextArea textArea = new JTextArea(20, 20);
+				// Read template settings
+				BufferedReader br = new BufferedReader(new InputStreamReader(MPEpisodeNumberGenerator.class
+						.getResourceAsStream("/de/mediaportal/episodenumbergenerator/model/settings.properties_template")));
+				String line = null;
+				while ((line = br.readLine()) != null) {
+					textArea.append(line + "\n");
+				}
+				br.close();
+
+				int returnType = JOptionPane.showConfirmDialog(null, textArea, "", JOptionPane.OK_CANCEL_OPTION);
+				if (returnType == JOptionPane.CANCEL_OPTION) {
+					System.exit(0);
+				} else {
+					configFile.createNewFile();
+					BufferedWriter bw = new BufferedWriter(new FileWriter(configFile));
+					bw.write(textArea.getText());
+					bw.close();
+				}
+			}
+
+			// Check log4j2.xml
+			checkAndCreate("config/log4j2.xml", "/de/mediaportal/episodenumbergenerator/model/log4j2.xml_template");
+
+			// Check substitutions file
+			checkAndCreate("config/substitutions.properties",
+					"/de/mediaportal/episodenumbergenerator/model/substitutions.properties_template");
+		} catch (IOException e) {
+			System.err.println("When initializing application's config an IOException has been thrown. ");
+			e.printStackTrace();
+		}
 		// Initialize Logger
 		System.setProperty("log4j.configurationFile", "config/log4j2.xml");
 		logger = LogManager.getLogger(MPEpisodeNumberGenerator.class);
@@ -249,6 +315,30 @@ public class MPEpisodeNumberGenerator {
 			rs.close();
 		} catch (Exception e) {
 			logger.error("When scanning epg an Exception has been thrown (" + e.getMessage() + ")", e);
+		}
+
+	}
+
+	/**
+	 * @param fileToCheck
+	 *            File to be checked and created from template if not exists
+	 * @param templateResource
+	 *            template resource to be used
+	 * @throws IOException
+	 */
+	private static void checkAndCreate(String fileToCheck, String templateResource) throws IOException {
+		File fileToCheckAndCreate = new File(fileToCheck);
+		if (!fileToCheckAndCreate.exists()) {
+			fileToCheckAndCreate.createNewFile();
+			BufferedWriter bw = new BufferedWriter(new FileWriter(fileToCheckAndCreate));
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(MPEpisodeNumberGenerator.class.getResourceAsStream(templateResource)));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				bw.write(line + "\n");
+			}
+			br.close();
+			bw.close();
 		}
 
 	}

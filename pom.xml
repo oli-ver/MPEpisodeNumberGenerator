@@ -24,6 +24,85 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator</mainClass>
+						</manifest>
+					</archive>
+					<finalName>MPEpisodeNumberGenerator</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<shadedArtifactAttached>true</shadedArtifactAttached>
+					<shadedClassifierName>shaded</shadedClassifierName>
+					<transformers>
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+							<mainClass>de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator</mainClass>
+						</transformer>
+					</transformers>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.7.8</version>
+				<executions>
+					<execution>
+						<id>l4j-clui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<jar>${project.build.directory}/${artifactId}-${version}-shaded.jar</jar>
+							<outfile>${project.build.directory}/episodescanner.exe</outfile>
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<classPath>
+								<mainClass>de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator</mainClass>
+								<preCp>anything</preCp>
+							</classPath>
+							<!-- <icon>src/main/resources/icon/application.ico</icon> -->
+							<jre>
+								<minVersion>1.8.0</minVersion>
+								<jdkPreference>preferJre</jdkPreference>
+							</jre>
+							<versionInfo>
+								<fileVersion>1.0.0.0</fileVersion>
+								<txtFileVersion>${project.version}</txtFileVersion>
+								<fileDescription>${project.name}</fileDescription>
+								<copyright>2016 science-site.de</copyright>
+								<productVersion>1.0.0.0</productVersion>
+								<txtProductVersion>1.0.0.0</txtProductVersion>
+								<productName>${project.name}</productName>
+								<companyName>hasCode.com</companyName>
+								<internalName>hasCode</internalName>
+								<originalFilename>episodescanner.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
@@ -61,6 +140,7 @@
 		</plugins>
 	</build>
 	<properties>
+		<java.version>1.8</java.version>
 		<commons.codec.version>1.8</commons.codec.version>
 		<jersey.version>1.9.1</jersey.version>
 		<junit.version>4.11</junit.version>
