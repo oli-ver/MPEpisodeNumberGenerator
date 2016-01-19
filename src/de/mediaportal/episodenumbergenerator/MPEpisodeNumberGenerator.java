@@ -189,7 +189,54 @@ public class MPEpisodeNumberGenerator {
 				boolean foundEpisode = false;
 				lineCounter++;
 
-				if (!config.isOffline()) {
+				// If no episode could be found try to get the episode
+				// numbers from the epg description field
+				logger.debug("Trying to parse epg description text to find the series and episode number");
+				String epgPattern = config.getEpgPattern();
+				String epgText = rs.getString("description");
+
+				Pattern numberPattern = Pattern.compile(REGEX_NUMBER);
+
+				Pattern pattern = Pattern.compile(epgPattern);
+				Matcher matcher = pattern.matcher(epgText);
+				if (matcher.find()) {
+
+					int beginIndex = matcher.start();
+					epgText = epgText.substring(beginIndex);
+					String[] episodeSeriesArray = epgText.split("\\.");
+					String episodeNumber = null;
+					String seasonNumber = null;
+					String episodeNumberTmp = episodeSeriesArray[0];
+					String seriesNumberTmp = episodeSeriesArray[1];
+
+					Matcher episodeMatcher = numberPattern.matcher(episodeNumberTmp);
+					if (episodeMatcher.find()) {
+						int beginEpisodeNumber = episodeMatcher.start();
+						episodeNumber = episodeNumberTmp.substring(beginEpisodeNumber);
+					}
+
+					Matcher seriesMatcher = numberPattern.matcher(seriesNumberTmp);
+					if (seriesMatcher.find()) {
+						int beginSeriesNumber = seriesMatcher.start();
+						seasonNumber = seriesNumberTmp.substring(beginSeriesNumber);
+					}
+					if (episodeNumber != null && seasonNumber != null) {
+						logger.info("Found series and episode number in description text: " + seasonNumber + "x" + episodeNumber);
+						PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"), seasonNumber,
+								episodeNumber);
+						updateStmt.executeUpdate();
+						foundEpisode = true;
+					} else {
+						logger.debug("Found no season and episode number for series '" + rs.getString("title") + "' and episode '"
+								+ rs.getString("episodeName") + "'");
+					}
+
+				} else {
+					logger.debug("Found no season and episode number for series '" + rs.getString("title") + "' and episode '"
+							+ rs.getString("episodeName") + "'");
+				}
+
+				if (!foundEpisode && !config.isOffline()) {
 					// Create TheTvDbController object per series title and try
 					// to
 					// find season and episode number
@@ -242,53 +289,6 @@ public class MPEpisodeNumberGenerator {
 								}
 							}
 						}
-					}
-				}
-				// If no episode could be found try to get the episode
-				// numbers from the epg description field
-				if (!foundEpisode) {
-					logger.debug("Trying to parse epg description text to find the series and episode number");
-					String epgPattern = config.getEpgPattern();
-					String epgText = rs.getString("description");
-
-					Pattern numberPattern = Pattern.compile(REGEX_NUMBER);
-
-					Pattern pattern = Pattern.compile(epgPattern);
-					Matcher matcher = pattern.matcher(epgText);
-					if (matcher.find()) {
-
-						int beginIndex = matcher.start();
-						epgText = epgText.substring(beginIndex);
-						String[] episodeSeriesArray = epgText.split("\\.");
-						String episodeNumber = null;
-						String seasonNumber = null;
-						String episodeNumberTmp = episodeSeriesArray[0];
-						String seriesNumberTmp = episodeSeriesArray[1];
-
-						Matcher episodeMatcher = numberPattern.matcher(episodeNumberTmp);
-						if (episodeMatcher.find()) {
-							int beginEpisodeNumber = episodeMatcher.start();
-							episodeNumber = episodeNumberTmp.substring(beginEpisodeNumber);
-						}
-
-						Matcher seriesMatcher = numberPattern.matcher(seriesNumberTmp);
-						if (seriesMatcher.find()) {
-							int beginSeriesNumber = seriesMatcher.start();
-							seasonNumber = seriesNumberTmp.substring(beginSeriesNumber);
-						}
-						if (episodeNumber != null && seasonNumber != null) {
-							logger.info("Found series and episode number in description text: " + seasonNumber + "x" + episodeNumber);
-							PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"),
-									seasonNumber, episodeNumber);
-							updateStmt.executeUpdate();
-						} else {
-							logger.debug("Found no season and episode number for series '" + rs.getString("title") + "' and episode '"
-									+ rs.getString("episodeName") + "'");
-						}
-
-					} else {
-						logger.debug("Found no season and episode number for series '" + rs.getString("title") + "' and episode '"
-								+ rs.getString("episodeName") + "'");
 					}
 				}
 
