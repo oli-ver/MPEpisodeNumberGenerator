@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>MPEpisodeNumberGenerator</groupId>
 	<artifactId>MPEpisodeNumberGenerator</artifactId>
-	<version>1.0.1</version>
+	<version>1.2.0</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
