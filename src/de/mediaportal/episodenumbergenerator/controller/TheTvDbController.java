@@ -332,8 +332,8 @@ public class TheTvDbController {
 			if (updatesSinceLastCache != null && updatesSinceLastCache.contains(seriesId)) {
 
 				if (seriesDataFile.exists()) {
-					logger.info("Deleting file " + seriesDataFile.getName()
-							+ " because new data on thetvdb has been found since last caching");
+					logger.info(
+							"Deleting file " + seriesDataFile.getName() + " because new data on thetvdb has been found since last caching");
 					seriesDataFile.delete();
 				}
 			}
@@ -365,13 +365,17 @@ public class TheTvDbController {
 	 */
 	private static Object parseFromCacheOrUrl(File xmlLocalFile, String xmlUrl, XStream xstream) throws IOException {
 		Object parsedXml = null;
-		if (!xmlLocalFile.exists()) {
-			logger.debug("Persisting XML from URL '" + xmlUrl + "'");
-			URL xmlUrlObject = new URL(xmlUrl);
-			parsedXml = xstream.fromXML(xmlUrlObject);
-			wget(xmlUrlObject, xmlLocalFile);
-		} else {
-			parsedXml = xstream.fromXML(xmlLocalFile);
+		try {
+			if (!xmlLocalFile.exists()) {
+				logger.debug("Persisting XML from URL '" + xmlUrl + "'");
+				URL xmlUrlObject = new URL(xmlUrl);
+				parsedXml = xstream.fromXML(xmlUrlObject);
+				wget(xmlUrlObject, xmlLocalFile);
+			} else {
+				parsedXml = xstream.fromXML(xmlLocalFile);
+			}
+		} catch (Exception e) {
+			logger.error("Persisting XML from URL '" + xmlUrl + "' failed (" + e.getMessage() + ")", e);
 		}
 		return parsedXml;
 
