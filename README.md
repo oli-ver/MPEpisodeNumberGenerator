@@ -35,43 +35,43 @@ cd "path\to\your\MPEpisodeNumberGenerator"
 
 The following configuration options can be set in settings.properties.
 
-#Path to local mysql database
+###Path to local mysql database
 mysqldatabasepath=C\:\\Program Files\\MySQL\\MySQL Server 5.6\\bin\\
 
-#Timestamp of last run
+###Timestamp of last run
 lastrun=2015-02-28 14\:30\:21
 
-#EPG indicator that indicates that the program is a series and no film (The german EPG begins with "Folge:" if you use TV Movie Clickfinder)
+###EPG indicator that indicates that the program is a series and no film (The german EPG begins with "Folge:" if you use TV Movie Clickfinder)
 epgdescriptionseriesindicator=Folge\:
 
-#EPG description pattern to find series and episode number from description text if not known by thetvdb.com
+###EPG description pattern to find series and episode number from description text if not known by thetvdb.com
 epgdescriptionpattern=Dies ist die \\d{1,}\\. Episode der \\d{1,}\\. Staffel.*
 
-#MediaPortal database user
+###MediaPortal database user
 mediaportaldbuser=root
 
-#top level qualifier of your country (to chose a mirror from thetvdb)
+###top level qualifier of your country (to chose a mirror from thetvdb)
 tld=de
 
-#language of your epg data
+###language of your epg data
 language=de
 
-# your database password
+### your database password
 mediaportaldbpassword=
 
-# your database backup part (a dump is created before processing the epg)
+### your database backup part (a dump is created before processing the epg)
 backuppath=bak/
 
-# Your database host
+### Your database host
 mediaportaldbhost=localhost
 
-# Your database name
+### Your database name
 mediaportaldbname=mptvdb
 
-# Thetvdb api proxy url
+### Thetvdb api proxy url
 thetvdb.proxy=http://science-site.de:9000/thetvdb/
 
-# Offline mode
+### Offline mode
 offline=true
 
 # Deutsch
@@ -111,41 +111,41 @@ cd "path\to\your\MPEpisodeNumberGenerator"
 
 Die folgenden Parameter können in der Datei settings.properties eingestellt werden:
 
-#Pfad zur lokalen MySQL-Installation
+###Pfad zur lokalen MySQL-Installation
 mysqldatabasepath=C\:\\Program Files\\MySQL\\MySQL Server 5.6\\bin\\
 
-#Zeitstempel des letztes Laufs (wird automatisch aktualisiert)
+###Zeitstempel des letztes Laufs (wird automatisch aktualisiert)
 lastrun=2015-02-28 14\:30\:21
 
-#EPG Begriff, mit dem festgestellt wird, dass das Programm eine Serie und kein Film ist. (Das deutsche EPG beginnt mit "Folge:", wenn man Clickfinder verwendet)
+###EPG Begriff, mit dem festgestellt wird, dass das Programm eine Serie und kein Film ist. (Das deutsche EPG beginnt mit "Folge:", wenn man Clickfinder verwendet)
 epgdescriptionseriesindicator=Folge\:
 
-#EPG Beschreibungs Suchbegriff, um Serien- und Episoden-Nummern aus dem Beschreibungs-Text zu extrahieren, wenn im Offline-Modus gearbeitet wird, oder die Serie auf thetvdb.com nicht gefunden wurde. 
+###EPG Beschreibungs Suchbegriff, um Serien- und Episoden-Nummern aus dem Beschreibungs-Text zu extrahieren, wenn im Offline-Modus gearbeitet wird, oder die Serie auf thetvdb.com nicht gefunden wurde. 
 epgdescriptionpattern=Dies ist die \\d{1,}\\. Episode der \\d{1,}\\. Staffel.*
 
-#MediaPortal Datenbank-Nutzer
+###MediaPortal Datenbank-Nutzer
 mediaportaldbuser=root
 
-#Top Level Qualifier deines Landes (Um den Spiegel-Server von thetvdb.com auszuwählen)
+###Top Level Qualifier deines Landes (Um den Spiegel-Server von thetvdb.com auszuwählen)
 tld=de
 
-#Sprache deines EPG
+###Sprache deines EPG
 language=de
 
-# Mediaportal Datenbank-Passwort
+### Mediaportal Datenbank-Passwort
 mediaportaldbpassword=
 
-# Backup-Pfad (Vor jedem Lauf wird eine Sicherung angelegt)
+### Backup-Pfad (Vor jedem Lauf wird eine Sicherung angelegt)
 backuppath=bak/
 
-# Datenbank-Hostname
+### Datenbank-Hostname
 mediaportaldbhost=localhost
 
-# Name der Datenbank
+### Name der Datenbank
 mediaportaldbname=mptvdb
 
-# Thetvdb api proxy url
+### Thetvdb api proxy url
 thetvdb.proxy=http://science-site.de:9000/thetvdb/
 
-# Offline mode
+### Offline mode
 offline=true
