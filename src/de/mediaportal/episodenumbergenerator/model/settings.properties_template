@@ -29,6 +29,9 @@ mediaportaldbpassword=
 # your database backup part (a dump is created before processing the epg)
 backuppath=bak/
 
+# Maximal amount of backups to store
+backupcount=10
+
 # Your database host
 mediaportaldbhost=localhost
 
@@ -37,6 +40,12 @@ mediaportaldbname=mptvdb
 
 # Thetvdb api proxy url
 thetvdb.proxy=http://science-site.de:9000/thetvdb/
+
+# Series titles that has to be resolved offline only (i. e. "seriesname1;seriesname2")
+seriesofflineonly=
+
+# Series titles that has to be resolved online only
+seriesonlineonly=Mythbusters - Die Wissensjäger
 
 # Offline mode (if Clickfinder EPG in german is used this is the preferred mode. Very fast search)
 offline=true

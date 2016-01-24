@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Class representation of the local settings.properties file. Implements the
@@ -57,6 +61,28 @@ public class Config extends Properties implements SettingsFields {
 	private boolean offline = false;
 
 	/**
+	 * maximal amoung of backups to be stored before deleting the oldest one
+	 */
+	private int backupCount = 10;
+
+	/**
+	 * List of titles of series that should never be resolved using the online
+	 * thetvdb search
+	 */
+	private String[] seriesTitlesOfflineOnly = null;
+
+	/**
+	 * List of titles of series that should never be resolved using the offline
+	 * epg text search
+	 */
+	private String[] seriesTitlesOnlineOnly = null;
+
+	/**
+	 * Logger of the {@link Config} class
+	 */
+	private Logger logger = null;
+
+	/**
 	 * Creates an instance of the Config class by reading from
 	 * settings.properties file
 	 * 
@@ -70,14 +96,26 @@ public class Config extends Properties implements SettingsFields {
 	 */
 	public Config() throws FileNotFoundException, IOException {
 		super();
+		logger = LogManager.getLogger(this.getClass());
 		load(new FileInputStream(new File(FILE_SETTINGS_PROPERTIES)));
-		// Fetch top level domain and language options
 		this.tld = getProperty(FIELD_TOP_LEVEL_DOMAIN);
 		this.language = getProperty(FIELD_LANGUAGE);
 		this.proxyUrl = getProperty(FIELD_PROXY_NAME);
 		this.epgSeriesIndicator = getProperty(FIELD_EPG_DESCRIPTION_SERIESINDICATOR);
 		this.epgPattern = getProperty(FIELD_EPG_DESCRIPTION_PATTERN);
 		this.offline = "true".equalsIgnoreCase(getProperty(FIELD_OFFLINE));
+		String backupCountStr = getProperty(FIELD_BACKUP_COUNT);
+		if (backupCountStr != null) {
+			this.backupCount = Integer.parseInt(backupCountStr);
+		}
+		String offlineOnlyStr = getProperty(FIELD_SERIES_OFFLINE_ONLY);
+		if (offlineOnlyStr != null && !"".equalsIgnoreCase(offlineOnlyStr)) {
+			seriesTitlesOfflineOnly = offlineOnlyStr.split(";");
+		}
+		String onlineOnlyStr = getProperty(FIELD_SERIES_ONLINE_ONLY);
+		if (onlineOnlyStr != null && !"".equalsIgnoreCase(onlineOnlyStr)) {
+			seriesTitlesOnlineOnly = onlineOnlyStr.split(";");
+		}
 	}
 
 	/**
@@ -119,9 +157,72 @@ public class Config extends Properties implements SettingsFields {
 	}
 
 	/**
-	 * @return the offline
+	 * @return true, if offline mode is enabled, false, if not
 	 */
 	public boolean isOffline() {
 		return offline;
+	}
+
+	/**
+	 * @return maximal amoung of backups to be stored before deleting the oldest
+	 *         one
+	 */
+	public int getBackupCount() {
+		return backupCount;
+	}
+
+	/**
+	 * @param seriesTitle
+	 *            title of the series
+	 * @return true, if title is in the list of offline only series
+	 */
+	public boolean isOfflineOnlySeries(String seriesTitle) {
+		seriesTitle = ansiToUTF8(seriesTitle);
+		if (seriesTitle != null && this.seriesTitlesOfflineOnly != null && this.seriesTitlesOfflineOnly.length > 0) {
+			for (String offlineSeries : seriesTitlesOfflineOnly) {
+				if (seriesTitle.equalsIgnoreCase(offlineSeries)) {
+					logger.warn("Found offline-only-series: " + seriesTitle + " equals " + offlineSeries);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Converts a given Ansi String to UTF-8
+	 * 
+	 * @param source
+	 *            ansi string
+	 * @return UTF-8 encoded String
+	 * @throws UnsupportedEncodingException
+	 */
+	private static String ansiToUTF8(String source) {
+		try {
+			byte[] ansiBytes = source.getBytes();
+			byte[] utf8 = new String(ansiBytes, "ISO-8859-1").getBytes("UTF-8");
+			String converted = new String(utf8);
+			return converted;
+		} catch (Exception e) {
+			return source;
+		}
+	}
+
+	/**
+	 * @param seriesTitle
+	 *            title of the series
+	 * @return true, if title is in the list of online only series
+	 */
+	public boolean isOnlineOnlySeries(String seriesTitle) {
+		seriesTitle = ansiToUTF8(seriesTitle);
+		if (seriesTitle != null && this.seriesTitlesOnlineOnly != null && this.seriesTitlesOnlineOnly.length > 0) {
+			for (String onlineeries : seriesTitlesOnlineOnly) {
+				if (seriesTitle.equalsIgnoreCase(onlineeries)) {
+					logger.warn("Found online-only-series: " + seriesTitle + " equals " + onlineeries);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -129,6 +130,12 @@ public class MPEpisodeNumberGenerator {
 			// Check substitutions file
 			checkAndCreate("config/substitutions.properties",
 					"/de/mediaportal/episodenumbergenerator/model/substitutions.properties_template");
+
+			// Check Cache path
+			File cachePath = new File(TheTvDbController.PATH_CACHE);
+			if (!cachePath.exists()) {
+				cachePath.mkdirs();
+			}
 		} catch (IOException e) {
 			System.err.println("When initializing application's config an IOException has been thrown. ");
 			e.printStackTrace();
@@ -189,106 +196,119 @@ public class MPEpisodeNumberGenerator {
 				boolean foundEpisode = false;
 				lineCounter++;
 
-				// If no episode could be found try to get the episode
-				// numbers from the epg description field
-				logger.debug("Trying to parse epg description text to find the series and episode number");
-				String epgPattern = config.getEpgPattern();
-				String epgText = rs.getString("description");
+				// Get the series and episode title
+				String title = rs.getString("title");
+				String episodeName = rs.getString("episodeName");
 
-				Pattern numberPattern = Pattern.compile(REGEX_NUMBER);
+				logger.info("Beginning search for " + title + " - " + episodeName);
 
-				Pattern pattern = Pattern.compile(epgPattern);
-				Matcher matcher = pattern.matcher(epgText);
-				if (matcher.find()) {
+				if (!config.isOnlineOnlySeries(title)) {
+					// try to get the episode
+					// numbers from the epg description field
+					logger.debug("Offline-Search: Trying to parse epg description text to find the series and episode number");
+					String epgPattern = config.getEpgPattern();
+					String epgText = rs.getString("description");
 
-					int beginIndex = matcher.start();
-					epgText = epgText.substring(beginIndex);
-					String[] episodeSeriesArray = epgText.split("\\.");
-					String episodeNumber = null;
-					String seasonNumber = null;
-					String episodeNumberTmp = episodeSeriesArray[0];
-					String seriesNumberTmp = episodeSeriesArray[1];
+					Pattern numberPattern = Pattern.compile(REGEX_NUMBER);
 
-					Matcher episodeMatcher = numberPattern.matcher(episodeNumberTmp);
-					if (episodeMatcher.find()) {
-						int beginEpisodeNumber = episodeMatcher.start();
-						episodeNumber = episodeNumberTmp.substring(beginEpisodeNumber);
-					}
+					Pattern pattern = Pattern.compile(epgPattern);
+					Matcher matcher = pattern.matcher(epgText);
+					if (matcher.find()) {
 
-					Matcher seriesMatcher = numberPattern.matcher(seriesNumberTmp);
-					if (seriesMatcher.find()) {
-						int beginSeriesNumber = seriesMatcher.start();
-						seasonNumber = seriesNumberTmp.substring(beginSeriesNumber);
-					}
-					if (episodeNumber != null && seasonNumber != null) {
-						logger.info("Found series and episode number in description text: " + seasonNumber + "x" + episodeNumber);
-						PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"), seasonNumber,
-								episodeNumber);
-						updateStmt.executeUpdate();
-						foundEpisode = true;
-					} else {
-						logger.debug("Found no season and episode number for series '" + rs.getString("title") + "' and episode '"
-								+ rs.getString("episodeName") + "'");
-					}
+						int beginIndex = matcher.start();
+						epgText = epgText.substring(beginIndex);
+						String[] episodeSeriesArray = epgText.split("\\.");
+						String episodeNumber = null;
+						String seasonNumber = null;
+						String episodeNumberTmp = episodeSeriesArray[0];
+						String seriesNumberTmp = episodeSeriesArray[1];
 
-				} else {
-					logger.debug("Found no season and episode number for series '" + rs.getString("title") + "' and episode '"
-							+ rs.getString("episodeName") + "'");
-				}
+						Matcher episodeMatcher = numberPattern.matcher(episodeNumberTmp);
+						if (episodeMatcher.find()) {
+							int beginEpisodeNumber = episodeMatcher.start();
+							episodeNumber = episodeNumberTmp.substring(beginEpisodeNumber);
+						}
 
-				if (!foundEpisode && !config.isOffline()) {
-					// Create TheTvDbController object per series title and try
-					// to
-					// find season and episode number
-					String newTitle = rs.getString("title");
-
-					String episodeName = rs.getString("episodeName");
-
-					// Change query if substiution exists
-					if (episodeNameSubstitutions != null) {
-						String substitute = episodeNameSubstitutions.get(episodeName);
-						if (substitute != null) {
-							logger.debug("Substitution '" + substitute + "' found for episode name '" + episodeName + "'");
-							episodeName = substitute;
+						Matcher seriesMatcher = numberPattern.matcher(seriesNumberTmp);
+						if (seriesMatcher.find()) {
+							int beginSeriesNumber = seriesMatcher.start();
+							seasonNumber = seriesNumberTmp.substring(beginSeriesNumber);
+						}
+						if (episodeNumber != null && seasonNumber != null) {
+							logger.info("Offline-Search: Found series and episode number in description text: " + seasonNumber + "x"
+									+ episodeNumber);
+							PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"),
+									seasonNumber, episodeNumber);
+							updateStmt.executeUpdate();
+							foundEpisode = true;
 						} else {
-							// Episode name of epg is used
+							// not found message will be logged later
 						}
-					}
 
-					if (newTitle.equalsIgnoreCase(lastTitle)) {
-						epgCounter++;
 					} else {
-						if (!lastTitle.equals("")) {
-							logger.info("Completed series with title '" + lastTitle + "' (mapped " + mappedCounter + " of " + epgCounter
-									+ " episodes in epg).");
-							epgCounter = 0;
-							mappedCounter = 0;
-						}
-						logger.info("Processing new series " + newTitle);
-						tvdb = new TheTvDbController(rs.getString("title"), rs.getString("originalAirDate").substring(0, 4));
+						logger.debug("Offline-Search: Found no season and episode number for series '" + title + "' and episode '"
+								+ episodeName + "'");
 					}
-					lastTitle = newTitle;
+				} else {
+					logger.warn("Skipped Offline-Search for '" + title + "' because it is marked as online only in the config");
+				}
+				if (!foundEpisode && !config.isOffline()) {
+					if (!config.isOfflineOnlySeries(title)) {
+						// Create TheTvDbController object per series title and
+						// try to find season and episode number
+						String newTitle = rs.getString("title");
 
-					SeriesData seriesData = tvdb.getSeriesData();
-					if (seriesData != null) {
-						Vector<EpisodeInformation> episodeList = seriesData.getEpisodeList();
-						if (episodeList != null && episodeList.size() > 0) {
-							for (EpisodeInformation episodeInfo : episodeList) {
-								if (episodeInfo != null) {
-									if (episodeInfo.getEpisodeName().equalsIgnoreCase(episodeName)) {
-										mappedCounter++;
-										logger.info("Mapped episode number successfully: " + episodeInfo.getSeasonNumber() + "x"
-												+ episodeInfo.getEpisodeNumber() + " - " + episodeInfo.getEpisodeName() + " - ProgramId='"
-												+ rs.getString("idProgram") + "'");
-										PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(rs.getInt("idProgram"),
-												episodeInfo.getSeasonNumber(), episodeInfo.getEpisodeNumber());
-										updateStmt.executeUpdate();
-										foundEpisode = true;
-										break;
+						// Change query if substitutions exists
+						if (episodeNameSubstitutions != null) {
+							String substitute = episodeNameSubstitutions.get(episodeName);
+							if (substitute != null) {
+								logger.debug(
+										"Online-Search: Substitution '" + substitute + "' found for episode name '" + episodeName + "'");
+								episodeName = substitute;
+							} else {
+								// Episode name of epg is used
+							}
+						}
+
+						if (newTitle.equalsIgnoreCase(lastTitle)) {
+							epgCounter++;
+						} else {
+							if (!"".equals(lastTitle)) {
+								logger.info("Online-Search: Completed series with title '" + lastTitle + "' (mapped " + mappedCounter
+										+ " of " + epgCounter + " episodes in epg).");
+								epgCounter = 0;
+								mappedCounter = 0;
+							}
+							logger.info("Online-Search: Processing new series " + newTitle);
+							tvdb = new TheTvDbController(newTitle, rs.getString("originalAirDate").substring(0, 4));
+						}
+						lastTitle = newTitle;
+
+						SeriesData seriesData = tvdb.getSeriesData();
+						if (seriesData != null) {
+							Vector<EpisodeInformation> episodeList = seriesData.getEpisodeList();
+							if (episodeList != null && episodeList.size() > 0) {
+								for (EpisodeInformation episodeInfo : episodeList) {
+									if (episodeInfo != null) {
+										if (episodeInfo.getEpisodeName().equalsIgnoreCase(episodeName)) {
+											mappedCounter++;
+											logger.info("Online-Search: Mapped episode number successfully: "
+													+ episodeInfo.getSeasonNumber() + "x" + episodeInfo.getEpisodeNumber() + " - "
+													+ episodeInfo.getEpisodeName() + " - ProgramId='" + rs.getString("idProgram") + "'");
+											PreparedStatement updateStmt = dbConnection.updateEpgEpisodeAndSeriesNumber(
+													rs.getInt("idProgram"), episodeInfo.getSeasonNumber(), episodeInfo.getEpisodeNumber());
+											updateStmt.executeUpdate();
+											foundEpisode = true;
+											break;
+										}
 									}
 								}
 							}
+						} else {
+							logger.warn("Online-Search: Could not fetch series data for: " + tvdb);
 						}
+					} else {
+						logger.warn("Skipped Online-Search for '" + title + "' because it is marked as offline only in the config");
 					}
 				}
 
