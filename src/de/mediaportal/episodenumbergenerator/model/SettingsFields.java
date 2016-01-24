@@ -82,6 +82,18 @@ public interface SettingsFields {
 	public static final String FIELD_OFFLINE = "offline";
 
 	/**
+	 * field for series to be searched only using the offline search (to be used
+	 * if epg series data and thetvdb series data differ)
+	 */
+	public static final String FIELD_SERIES_OFFLINE_ONLY = "seriesofflineonly";
+
+	/**
+	 * field for series to be searched only using the online search (to be used
+	 * if epg series data and thetvdb series data differ)
+	 */
+	public static final String FIELD_SERIES_ONLINE_ONLY = "seriesonlineonly";
+
+	/**
 	 * File name of the substitutions file
 	 */
 	public static final String FILE_SUBSTITUTIONS_PROPERTIES = "config/substitutions.properties";
@@ -95,4 +107,10 @@ public interface SettingsFields {
 	 * field for the episode name list in the substitutions properties file
 	 */
 	public static final String FIELD_SUBSTITUTIONS_EPISODES = "episodename.substitutions";
+
+	/**
+	 * field for the maximal amoung of backups to be stored before deleting the
+	 * oldest one
+	 */
+	public static final String FIELD_BACKUP_COUNT = "backupcount";
 }

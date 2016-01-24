@@ -7,7 +7,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Vector;
 
 import de.mediaportal.episodenumbergenerator.MPEpisodeNumberGenerator;
 import de.mediaportal.episodenumbergenerator.model.Config;
@@ -68,6 +70,11 @@ public class DatabaseConnection {
 	private String backupPath = null;
 
 	/**
+	 * Amount of backups to store before deleting the oldest
+	 */
+	private int amountToBackup = 10;
+
+	/**
 	 * @return Singleton instance of the class
 	 * @throws SQLException
 	 *             Thrown if connection to database cannot be established
@@ -97,12 +104,14 @@ public class DatabaseConnection {
 		mediaportaldbpassword = config.getProperty(Config.FIELD_MPDB_PASSWORD);
 		mysqlBinPath = config.getProperty(Config.FIELD_MPDB_DBPATH);
 		backupPath = config.getProperty(Config.FIELD_MPDB_BACKUP_PATH);
+		amountToBackup = config.getBackupCount();
 
 		// This will load the MySQL driver, each DB has its own driver
 		Class.forName("com.mysql.jdbc.Driver");
 		// Setup the connection with the DB
-		connection = DriverManager.getConnection("jdbc:mysql://" + dbHost + "/" + dbName + "?" + "user=" + mediaportaldbuser + "&password="
-				+ mediaportaldbpassword);
+		connection = DriverManager.getConnection(
+				"jdbc:mysql://" + dbHost + "/" + dbName + "?" + "user=" + mediaportaldbuser + "&password=" + mediaportaldbpassword);
+		
 
 	}
 
@@ -200,7 +209,42 @@ public class DatabaseConnection {
 		File backupDirectory = new File("bak/");
 		if (!backupDirectory.exists()) {
 			backupDirectory.mkdirs();
+		} else {
+			// Only save the last 10 backups. Check for older backups and delete
+			// them
+			File[] files = backupDirectory.listFiles();
+			Vector<File> fileList = new Vector<File>();
+			for (File file : files) {
+				fileList.add(file);
+			}
+			fileList.sort(new Comparator<File>() {
+
+				@Override
+				public int compare(File o1, File o2) {
+					if (o1 != null && o2 != null) {
+						long o1Age = o1.lastModified();
+						long o2Age = o2.lastModified();
+						if (o1Age < o2Age) {
+							return -1;
+						} else if (o1Age > o2Age) {
+							return 1;
+						} else {
+							return 0;
+						}
+					} else {
+						return 0;
+					}
+				}
+			});
+			if (fileList.size() > amountToBackup) {
+				for (int i = amountToBackup; i < fileList.size(); i++) {
+					File fileToDelete = fileList.get(i);
+					fileToDelete.delete();
+				}
+			}
 		}
+
+		// Dump the database
 		String executeCmd = mysqlBinPath + "mysqldump -u " + mediaportaldbuser + " -p" + mediaportaldbpassword + " " + dbName + " -r "
 				+ backupPath + timestamp + "_backup.sql";
 		Process runtimeProcess = Runtime.getRuntime().exec(executeCmd);

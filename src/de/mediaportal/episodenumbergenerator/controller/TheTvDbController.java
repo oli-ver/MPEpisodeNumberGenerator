@@ -42,7 +42,7 @@ public class TheTvDbController {
 	/**
 	 * Path to the xml file cache ({@value #PATH_CACHE})
 	 */
-	protected final static String PATH_CACHE = "cache/";
+	public final static String PATH_CACHE = "cache/";
 
 	/**
 	 * Filename of the mirror list ({@value #FILENAME_MIRROR_LIST})
@@ -337,15 +337,39 @@ public class TheTvDbController {
 					seriesDataFile.delete();
 				}
 			}
-
-			String getSeriesDataUrl = config.getProxyUrl() + "series/?seriesid=" + seriesId + "&language=" + config.getLanguage();
+			int tryCounter = 1;
 			XStream xstreamSeriesData = new XStream();
 			xstreamSeriesData.ignoreUnknownElements();
 			xstreamSeriesData.processAnnotations(SeriesData.class);
 			xstreamSeriesData.processAnnotations(SeriesInformation.class);
 			xstreamSeriesData.processAnnotations(EpisodeInformation.class);
-			seriesData = (SeriesData) parseFromCacheOrUrl(seriesDataFile, getSeriesDataUrl, xstreamSeriesData);
+			while (tryCounter < 4 && seriesData == null) {
+				try {
+					tryCounter++;
+					fetchSeriesData(xstreamSeriesData, seriesDataFile);
+				} catch (Exception e) {
+					logger.error("Try No. " + tryCounter + ": When trying to fetch series data from cache or from "
+							+ "thetvdb an Exception has been thrown (" + e.getMessage() + ").");
+					logger.debug(e);
+				}
+			}
 		}
+	}
+
+	/**
+	 * Fetches Series information from cache or from thetvdb
+	 * 
+	 * @param xstreamSeriesData
+	 *            XStream object
+	 * @param seriesDataFile
+	 *            DataFile
+	 * @throws IOException
+	 *             Exception when a problem occurs while parsing from file or
+	 *             from URL
+	 */
+	private void fetchSeriesData(XStream xstreamSeriesData, File seriesDataFile) throws IOException {
+		String getSeriesDataUrl = config.getProxyUrl() + "series/?seriesid=" + seriesId + "&language=" + config.getLanguage();
+		seriesData = (SeriesData) parseFromCacheOrUrl(seriesDataFile, getSeriesDataUrl, xstreamSeriesData);
 	}
 
 	/**
@@ -403,5 +427,13 @@ public class TheTvDbController {
 	 */
 	public SeriesData getSeriesData() {
 		return seriesData;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "[querySeriesName=" + querySeriesName + ", seriesId=" + seriesId + ", queryAirYear=" + queryAirYear + "]";
 	}
 }
