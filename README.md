@@ -31,7 +31,7 @@ The application does not support Microsoft SQL Server Express Edition at the mom
 cd "path\to\your\MPEpisodeNumberGenerator"
 6. Start the application using the cmd script
 
-## Configuration
+## Configuration of the tool
 
 The following configuration options can be set in settings.properties.
 
@@ -74,6 +74,25 @@ thetvdb.proxy=http://science-site.de:9000/thetvdb/
 ### Offline mode
 offline=true
 
+## Configuration of LogExpert (one way to start MPEPisodeNumberGenerator)
+
+The aim if you use this tool is, to have all episode numbers in the database at all time. To achieve this, you have to run it after the TV Movie EPG-Import, because after the import all data previously saved into the database will be lost.
+
+One way is to use the option of the TV Movie EPG Importer (there is a text field in the configuration to start a tool with name episodescanner.exe). After some update of the EPG Importer (or of MediaPortal) this does not seem to work anymore, so LogExpert is an alternative.
+
+LogExpert is a Windows tool to keep track of Logfiles. Futhermore it can start actions, if a specific search string was found in the logfile. To use this for MPEpisodeNumberGenerator you can do the following:
+
+1. Download and unpack LogExpert at http://logexpert.codeplex.com/
+2. Open your TV Movie Import Logfile with LogExpert
+3. In the application menu choose Options --> Highlights and triggers
+4. Configure "TVMovie: overall Import duration:" as search string (thanks to http://forum.team-mediaportal.com/members/d3ltoroxp.76230/)
+5. Activate the checkbox "Plugin" in the section "Actions" and use the "ProcessLauncher keyword plugin" with parameter "your\path\to\episodescanner.exe"
+6. You can change the color of the log line if you want to now, so you will see if it comes up
+7. Click on "Add" to add the line matcher
+8. Click on "Ok"
+
+LogExpert should now start episodescanner.exe if the specified log line comes up
+
 # Deutsch
 ## MPEpisodeNumberGenerator
 Serien- und Episoden-Nummer Generator für Mediaportal 1.X
@@ -107,7 +126,7 @@ Das Programm unterstützt im Moment nicht Microsoft SQL Server Express Edition.
 cd "path\to\your\MPEpisodeNumberGenerator"
 6. Startet die Applikation mit dem cmd Skript
 
-## Konfiguration
+## Konfiguration des Tools
 
 Die folgenden Parameter können in der Datei settings.properties eingestellt werden:
 
@@ -149,3 +168,22 @@ thetvdb.proxy=http://science-site.de:9000/thetvdb/
 
 ### Offline mode
 offline=true
+
+## Konfiguration von LogExpert (eine Möglichkeit, MPEpisodeNumberGenerator zu starten)
+
+Das Ziel von MPEpisodeNumberGenerator ist, immer alle Episoden- und Staffel-Nummern in der Datenbank verfügbar zu haben. Um das zu erreichen, muss man es jedes Mal nach dem TV Movie EPG Import starten, da nach diesem Lauf alle bereits gespeicherten Nummern wieder zurückgesetzt werden.
+
+Eine Möglichkeit das zu erreichen ist es, die Option vom TV Movie EPG Importer zu nutzen (es gibt ein Text-Feld in der Konfiguration, um ein Tool mit dem Namen episodescanner.exe zu starten). Nach einem der Updates des EPG Importers (oder von MediaPortal) scheint das jedoch nicht mehr zu funktionieren, also ist LogExpert eine Alternative.
+
+LogExpert ist ein Windows-Tool, um Logfiles zu überwachen. Außerdem kann man dort Start-Aktionen definieren, wenn eine bestimmte Such-Zeichenfolge im Logfile gefunden wurde. Um das für MPEpisodeNumberGenerator zu nutzen, kann man es wie folgt konfigurieren:
+
+1. Lade LogExpert herunter und entpacke es (http://logexpert.codeplex.com/)
+2. Öffne dein TV Movie Import Logfile mit LogExpert
+3. Wähle im Applikationsmenü Options --> Highlights and triggers
+4. Konfiguriere "TVMovie: overall Import duration:" als Such-Zeichenfolge (search string) (Danke an http://forum.team-mediaportal.com/members/d3ltoroxp.76230/)
+5. Aktiviere die Checkbox "Plugin" in der Sektion "Actions" und nutze das "ProcessLauncher keyword plugin" mit dem Parameter "dein\pfad\zu\episodescanner.exe"
+6. Optional: Ändere die Farbe der Logzeile, dann kann man es besser sehen, wenn der Trigger auftreten müsste
+7. Klicke auf "Add", um den "line matcher" hinzuzufügen
+8. Klicke auf "Ok"
+
+LogExpert sollte episodescanner.exe nun starten, wenn die Logzeile gemeldet wird.
