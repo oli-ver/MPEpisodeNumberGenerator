@@ -1,4 +1,7 @@
 # ENGLISH
+
+[![Join the chat at https://gitter.im/MPEpisodeNumberGenerator/community](https://badges.gitter.im/MPEpisodeNumberGenerator/community.svg)](https://gitter.im/MPEpisodeNumberGenerator/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## MPEpisodeNumberGenerator
 Series and episode number generator for Mediaportal 1.X
 
