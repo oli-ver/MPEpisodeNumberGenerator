@@ -22,6 +22,7 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Stage build
       run: mkdir staging && cp target/*.jar staging
     - name: Deploy as GitHub release
       uses: actions/upload-artifact@v1
