@@ -91,7 +91,6 @@
 							<!-- <icon>src/main/resources/icon/application.ico</icon> -->
 							<jre>
 								<minVersion>1.8.0</minVersion>
-								<requiresJdk>False</requiresJdk>
 							</jre>
 							<versionInfo>
 								<fileVersion>1.0.0.0</fileVersion>
